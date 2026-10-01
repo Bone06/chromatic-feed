@@ -6,8 +6,14 @@ import { fileURLToPath } from 'node:url'
 import { SIGNATURE_ALGORITHM } from './signature.js'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const privateKeyPath = resolve(root, '.secrets', 'feed-signing-private.pem')
-const publicKeyPath = resolve(root, 'keys', 'feed-public-key.json')
+const privateKeyPath = resolve(
+  process.env.FEED_SIGNING_PRIVATE_KEY_PATH ||
+    resolve(root, '.secrets', 'feed-signing-private.pem')
+)
+const publicKeyPath = resolve(
+  process.env.FEED_SIGNING_PUBLIC_KEY_PATH ||
+    resolve(root, 'keys', 'feed-public-key.json')
+)
 const keyId = process.env.FEED_SIGNING_KEY_ID || 'feed-2026-01'
 const { privateKey, publicKey } = generateKeyPairSync('ec', {
   namedCurve: 'prime256v1',

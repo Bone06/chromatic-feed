@@ -1,0 +1,10 @@
+{
+  "algorithm": "ECDSA-P256-SHA256",
+  "jwk": {
+    "kty": "EC",
+    "x": "HVhPYrX1tJx3dsvWlk8vwZhKToG0hxvcMIYFS21n9lA",
+    "y": "7MKsQqslWpgZkqIFvJWDmS1va9VNInkI06GKJP_DbMA",
+    "crv": "P-256"
+  },
+  "keyId": "feed-2026-02"
+}

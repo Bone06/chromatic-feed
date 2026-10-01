@@ -56,6 +56,13 @@ Git-ignored `.secrets` directory and a distributable public key under `keys`.
 Back up the private key securely and never commit or publish it. Production may
 provide another private-key path through `FEED_SIGNING_PRIVATE_KEY_PATH`.
 
+Release key rotation creates the next pair beside, rather than over, the active
+pair. Set `FEED_SIGNING_KEY_ID`, `FEED_SIGNING_PRIVATE_KEY_PATH` and
+`FEED_SIGNING_PUBLIC_KEY_PATH` to new paths before running `npm run keygen`.
+The command refuses to overwrite either file. Commit only the new public JSON;
+keep and back up the new private PEM offline until the corresponding extension
+release is public and the production signer is ready to rotate.
+
 ## Production host layout
 
 The Debian host uses the non-login `chromium-feed` system account. Initialize

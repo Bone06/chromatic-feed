@@ -1,5 +1,6 @@
 import { createPublicKey, sign, verify } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export const SIGNATURE_ALGORITHM = 'ECDSA-P256-SHA256'
 
@@ -24,6 +25,29 @@ const validatePublicKeyConfiguration = publicKey => {
     typeof publicKey.jwk.x !== 'string' || typeof publicKey.jwk.y !== 'string'
   ) throw new Error('Invalid feed public key configuration')
   return publicKey
+}
+
+export const loadPublicKeyConfiguration = async publicKeyPath =>
+  validatePublicKeyConfiguration(JSON.parse(await readFile(publicKeyPath, 'utf8')))
+
+export const loadTrustedPublicKeys = async publicKeyDirectory => {
+  const filenames = (await readdir(publicKeyDirectory))
+    .filter(filename => /^feed-public-key(?:-[a-z0-9-]+)?\.json$/.test(filename))
+    .sort()
+  if (filenames.length === 0) throw new Error('No trusted feed public keys found')
+
+  const trustedPublicKeys = {}
+  for (const filename of filenames) {
+    const publicKey = await loadPublicKeyConfiguration(
+      join(publicKeyDirectory, filename)
+    )
+    const existing = trustedPublicKeys[publicKey.keyId]
+    if (existing && JSON.stringify(existing) !== JSON.stringify(publicKey.jwk)) {
+      throw new Error(`Conflicting feed public key: ${publicKey.keyId}`)
+    }
+    trustedPublicKeys[publicKey.keyId] = publicKey.jwk
+  }
+  return trustedPublicKeys
 }
 
 export const verifyFeedSignature = ({
@@ -62,11 +86,10 @@ export const signFeed = ({ feedText, keyId, privateKey, publicJwk }) => {
 }
 
 export const loadSigningMaterial = async ({ privateKeyPath, publicKeyPath }) => {
-  const [privateKey, publicKeyText] = await Promise.all([
+  const [privateKey, publicKey] = await Promise.all([
     readFile(privateKeyPath, 'utf8'),
-    readFile(publicKeyPath, 'utf8')
+    loadPublicKeyConfiguration(publicKeyPath)
   ])
-  const publicKey = validatePublicKeyConfiguration(JSON.parse(publicKeyText))
   return {
     algorithm: publicKey.algorithm,
     keyId: publicKey.keyId,

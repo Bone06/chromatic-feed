@@ -9,7 +9,11 @@ import { fetchRobRichSource } from './adapters/robrich.js'
 import { aggregateSources } from './aggregate.js'
 import { getPreviousFeed } from './previous-feed.js'
 import { getFeedOutputPath } from './paths.js'
-import { loadSigningMaterial, signFeed } from './signature.js'
+import {
+  loadSigningMaterial,
+  loadTrustedPublicKeys,
+  signFeed
+} from './signature.js'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const output = getFeedOutputPath({ root })
@@ -22,13 +26,12 @@ const signingMaterial = await loadSigningMaterial({
     resolve(root, '.secrets', 'feed-signing-private.pem'),
   publicKeyPath: resolve(root, 'keys', 'feed-public-key.json')
 })
+const trustedPublicKeys = await loadTrustedPublicKeys(resolve(root, 'keys'))
 
 const previousFeed = await getPreviousFeed({
   localPath: output,
   previousFeedUrl: process.env.PREVIOUS_FEED_URL,
-  trustedPublicKeys: {
-    [signingMaterial.keyId]: signingMaterial.publicJwk
-  }
+  trustedPublicKeys
 })
 
 const tasks = [

@@ -63,6 +63,13 @@ The command refuses to overwrite either file. Commit only the new public JSON;
 keep and back up the new private PEM offline until the corresponding extension
 release is public and the production signer is ready to rotate.
 
+After that extension release is public, preserve the outgoing public key under
+its versioned filename and promote the incoming public key to
+`keys/feed-public-key.json`. The generator and feed verifier trust every
+versioned public key in `keys`, so the outgoing signed feed remains a valid
+cache source during the first publication with the new key. Only the canonical
+file selects the key used for new signatures.
+
 ## Production host layout
 
 The Debian host uses the non-login `chromium-feed` system account. Initialize

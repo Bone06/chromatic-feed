@@ -98,6 +98,27 @@ the resulting JSON and detached signature, copies both files into one immutable
 release directory, and only then atomically switches the active symlink.
 Failures before activation leave the public feed unchanged.
 
+## Signing-key rotation
+
+Publish the corresponding extension release, including trust for both the
+outgoing and incoming public keys, before changing the production signer.
+Deploy the reviewed application revision that promotes the incoming public key
+to `keys/feed-public-key.json` and retains the outgoing versioned public key.
+
+Stop both timers and wait for any running publisher to finish before replacing
+either application code or signing material. Install the incoming private key
+under a temporary root-owned path, set its final owner to
+`chromium-feed:chromium-feed` and mode to `0600`, and derive its public JWK as
+the service user. Do not replace the active key unless those coordinates match
+the promoted canonical public key.
+
+Back up the outgoing private key on the host, atomically install the validated
+incoming key at the stable private-key path, and run one manual publication.
+Confirm that the public detached signature contains the incoming key ID, run
+the local health service, and verify the public HTTPS feed before restarting
+the timers. Keep the outgoing key backup and the previous application directory
+until at least one scheduled publisher and health run have succeeded.
+
 ## systemd
 
 After a successful manual publication, install the units:

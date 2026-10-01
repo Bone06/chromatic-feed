@@ -1,5 +1,5 @@
 [Unit]
-Description=Monitor the signed Chromium build feed
+Description=Monitor Chromatic Feed
 
 [Timer]
 OnBootSec=5m
@@ -10,4 +10,3 @@ Unit=chromium-build-sources-health.service
 
 [Install]
 WantedBy=timers.target
-

@@ -1,4 +1,4 @@
-# Chromium Build Sources
+# Chromatic Feed
 
 Dependency-free Node.js aggregator for the signed Chromium build feed consumed
 by Chromium Update Notifications. It normalizes independently maintained build
@@ -84,6 +84,6 @@ failure notification delivery remains to be configured.
 
 ## License
 
-Chromium Build Sources is free software licensed under the GNU General Public
+Chromatic Feed is free software licensed under the GNU General Public
 License, version 3 or (at your option) any later version. See `COPYING.txt` for
 the complete license text.

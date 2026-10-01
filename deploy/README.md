@@ -1,11 +1,18 @@
 # Production deployment
 
-The production host is Debian 13 with Caddy. The feed generator runs as the
+The production host is Debian 13 with Caddy. Chromatic Feed runs as the
 non-login `chromium-feed` system account and uses the system-wide,
 APT-managed Node.js 24 LTS installation from NodeSource at `/usr/bin/node`.
 A separate interactive user's NVM installation is not part of the service
 runtime. The application requires Node.js 24.11.0 or newer and also enforces
 that minimum at runtime.
+
+The `chromium-feed` account, `chromium-build-sources` systemd unit names and
+the `/opt`, `/var/lib` and `/srv/chromium-build-sources` paths are retained as
+stable operational identifiers after the project was renamed to Chromatic
+Feed. Keeping them avoids a risky production migration and preserves the
+existing public feed endpoint; new deployments intentionally use the same
+identifiers.
 
 ## Layout
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=Validate freshness and signature of the Chromium build feed
+Description=Validate freshness and signature of Chromatic Feed
 After=chromium-build-sources.service
 
 [Service]
@@ -24,4 +24,3 @@ RestrictRealtime=true
 LockPersonality=true
 RestrictAddressFamilies=AF_UNIX
 InaccessiblePaths=/var/lib/chromium-build-sources/private
-

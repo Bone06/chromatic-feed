@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/kkkrist/chromium-build-sources/blob/master/schema/feed-v1.schema.json",
-  "title": "Chromium Build Sources Feed v1",
+  "$id": "https://github.com/Bone06/chromatic-feed/blob/master/schema/feed-v1.schema.json",
+  "title": "Chromatic Feed v1",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "generatedAt", "sources", "builds"],

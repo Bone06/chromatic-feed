@@ -1,12 +1,12 @@
-# Chromium build source integration contract
+# Chromatic Feed integration contract
 
-This is the canonical coordination document shared by the Chromium Build
-Sources aggregator and the Chromium Update Notifications extension. Read it
-before changing either project.
+This is the canonical coordination document shared by the Chromatic Feed
+aggregator and the Chromium Update Notifications extension. Read it before
+changing either project.
 
 ## Projects and responsibilities
 
-### `chromium-build-sources`
+### `chromatic-feed`
 
 - Knows the external build sources and their different release, tag and asset
   formats.

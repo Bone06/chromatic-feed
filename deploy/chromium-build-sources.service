@@ -1,5 +1,5 @@
 [Unit]
-Description=Generate and publish the signed Chromium build feed
+Description=Generate and publish Chromatic Feed
 Wants=network-online.target
 After=network-online.target
 

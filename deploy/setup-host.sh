@@ -60,7 +60,7 @@ if [ ! -L "${PUBLISH_DIR}" ]; then
 fi
 
 printf '%s\n' \
-	"Chromium build feed host directories are ready:" \
+	"Chromatic Feed host directories are ready:" \
 	"  application: ${APP_DIR}" \
 	"  state:       ${STATE_DIR}" \
 	"  private key: ${PRIVATE_DIR}/feed-signing-private.pem" \

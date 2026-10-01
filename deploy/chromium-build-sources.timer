@@ -1,5 +1,5 @@
 [Unit]
-Description=Update the signed Chromium build feed hourly
+Description=Update Chromatic Feed hourly
 
 [Timer]
 OnCalendar=hourly
@@ -9,4 +9,3 @@ Unit=chromium-build-sources.service
 
 [Install]
 WantedBy=timers.target
-

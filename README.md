@@ -55,6 +55,10 @@ ECDSA P-256/SHA-256 in IEEE P1363 format and covers the exact feed bytes.
 Git-ignored `.secrets` directory and a distributable public key under `keys`.
 Back up the private key securely and never commit or publish it. Production may
 provide another private-key path through `FEED_SIGNING_PRIVATE_KEY_PATH`.
+The checked-in public keys are for this project's deployment; they do not give
+a clone access to its private signing key. An independent deployment must
+generate its own key pair and key ID, configure its own signer, and embed the
+matching public key in its extension fork. The private key remains secret.
 
 Planned rotation follows a 12-month maximum active signing lifetime and a
 30-day client migration window; it is not required for every extension release.

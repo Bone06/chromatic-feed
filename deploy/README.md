@@ -100,8 +100,16 @@ Failures before activation leave the public feed unchanged.
 
 ## Signing-key rotation
 
-Publish the corresponding extension release, including trust for both the
-outgoing and incoming public keys, before changing the production signer.
+The active signer has a maximum 12-month signing lifetime from first production
+use, not one extension release. For a planned rotation, publish a bridging
+extension that trusts the outgoing and incoming public keys at the start of a
+30-day migration window before changing the production signer. End dual trust
+at the cutover through a tested client expiry, and remove the outgoing key in
+a follow-up release. Retire clients that never received the incoming key. See
+`INTEGRATION.md` for the current key's deadline and the compromise exception.
+Do not use this planned procedure or a
+grace period if either private key is suspected compromised.
+
 Deploy the reviewed application revision that promotes the incoming public key
 to `keys/feed-public-key.json` and retains the outgoing versioned public key.
 
@@ -117,7 +125,9 @@ incoming key at the stable private-key path, and run one manual publication.
 Confirm that the public detached signature contains the incoming key ID, run
 the local health service, and verify the public HTTPS feed before restarting
 the timers. Keep the outgoing key backup and the previous application directory
-until at least one scheduled publisher and health run have succeeded.
+until at least one scheduled publisher and health run have succeeded, then
+remove the outgoing private key from the host; preserve only an offline backup
+if recovery policy requires it. Only one private key may be active at a time.
 
 ## systemd
 

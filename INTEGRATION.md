@@ -201,14 +201,48 @@ older `generatedAt`. A private key must never enter a repository or hosting.
 For rotation, first release an extension that trusts the new public key; only
 then may the aggregator switch to the new private key.
 
-Release rule: prepare a new feed key pair for every public extension release.
-Release N trusts both current `K_N` and next `K_N+1` public keys while the feed
-is still signed by `K_N`. Release N+1 trusts `K_N+1` and `K_N+2`; only then may
-the feed switch to `K_N+1`. After transition, archive the retired private key
-offline or destroy it; never leave it in the active generator. A compromised
-old key then cannot affect new extension releases. Installations that still
-trust that old key can only be protected by an extension update, not by a
-feed-only change.
+The online feed-signing key has a maximum active signing lifetime of 12 calendar
+months from its first production use; an extension release alone does not
+trigger rotation. Record that first-use date and plan a replacement before the
+deadline. `feed-2026-02` first signed the production feed on 2026-10-01, so its
+planned signing deadline is 2027-10-01. Start the planned transition 30 days
+before the scheduled cutover: publish a bridging extension that trusts the
+current and next public keys, then allow up to 30 days for updates before
+changing the single active production signer. Do not run two active private
+signing keys on the host.
+Clients that never acquire the next public key must be retired when the signer
+changes; keeping the old signer active for them is not an indefinite fallback.
+
+The entire dual-trust period for a planned rotation is limited to 30 days,
+ending at the signer cutover. A bridging client must stop accepting the
+outgoing key at that cutover, through a tested client-side expiry; a follow-up
+release should also remove it. Before the next planned rotation, implement and
+test this expiry path and the precise UTC cutover dates; the existing 4.1.0
+client embeds `feed-2026-01` and `feed-2026-02` without expiry and cannot be
+retroactively changed. Remove `feed-2026-01` from the next client release.
+Starting with the next extension release, show a persistent, restrained popup
+notice during a planned transition while the last successfully verified feed
+uses the outgoing `keyId`. Persist that authenticated key ID across `304`
+responses; clear the notice when a feed signed by the incoming key is verified.
+The notice must not claim that an already updated bridging client is outdated,
+and must not replace feed error or stale-data reporting. Do not use the browser
+badge or a system notification for this planned-transition notice.
+The extension code already records the verified `buildFeedKeyId` and contains
+the notice logic; its `PLANNED_FEED_KEY_ROTATION` setting remains inactive until
+the next outgoing/incoming key pair and exact UTC cutover are scheduled.
+After the rollback window, archive the outgoing private key offline or destroy
+it; never leave it in the active generator. A public key remaining in an older
+installed client is not revoked by removing a private key from the host.
+
+Suspected or confirmed private-key compromise overrides the planned schedule:
+stop publishing with that key immediately, generate and deploy a replacement,
+and issue an emergency extension release that rejects the compromised key.
+There is no 30-day grace period and no dual trust of the compromised key in
+the emergency release. Old installed clients cannot be remotely made to stop
+trusting a key baked into them; warn users to update, and do not claim those
+clients are protected merely because the server-side signer changed. Keep the
+public feed unavailable rather than continue signing with a suspected key if
+the safe replacement cannot be completed immediately.
 
 A planned security improvement introduces a separate offline recovery/root
 key. It signs a versioned, expiring authorization document for the online feed

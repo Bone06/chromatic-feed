@@ -1,9 +1,7 @@
 import './runtime-check.js'
-import { generateKeyPairSync } from 'node:crypto'
-import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIGNATURE_ALGORITHM } from './signature.js'
+import { createKeyPairFiles } from './key-pair.js'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const privateKeyPath = resolve(
@@ -15,22 +13,7 @@ const publicKeyPath = resolve(
     resolve(root, 'keys', 'feed-public-key.json')
 )
 const keyId = process.env.FEED_SIGNING_KEY_ID || 'feed-2026-01'
-const { privateKey, publicKey } = generateKeyPairSync('ec', {
-  namedCurve: 'prime256v1',
-  privateKeyEncoding: { format: 'pem', type: 'pkcs8' },
-  publicKeyEncoding: { format: 'jwk' }
-})
-
-await Promise.all([
-  mkdir(dirname(privateKeyPath), { recursive: true }),
-  mkdir(dirname(publicKeyPath), { recursive: true })
-])
-await writeFile(privateKeyPath, privateKey, { encoding: 'utf8', flag: 'wx', mode: 0o600 })
-await writeFile(publicKeyPath, `${JSON.stringify({
-  algorithm: SIGNATURE_ALGORITHM,
-  jwk: publicKey,
-  keyId
-}, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' })
+await createKeyPairFiles({ privateKeyPath, publicKeyPath, keyId })
 
 console.log(`Private key created at ${privateKeyPath}`)
 console.log(`Public key created at ${publicKeyPath}`)

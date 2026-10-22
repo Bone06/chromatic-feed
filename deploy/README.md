@@ -167,6 +167,11 @@ The health service verifies the active feed, detached signature and full schema
 without network or private-key access. It fails when `generatedAt` is more than
 three hours old, allowing a temporary missed hourly generation while detecting
 a persistent outage.
+It also checks every source's `lastSuccessAt`: failed or over-age sources produce
+a `Degraded signed feed` message and per-source warnings. When no source has a
+success within the same maximum age, the monitor fails even if cached builds
+have been republished with a recent `generatedAt`. A single transient failure
+does not delete cached builds or immediately make the whole service fail.
 
 Install and test the monitor:
 

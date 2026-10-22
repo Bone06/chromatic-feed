@@ -256,7 +256,19 @@ remains the active design.
 
 The extension stores the production feed ETag and sends `If-None-Match` on
 later requests. On `304 Not Modified`, the locally cached feed that already
-passed signature and schema validation remains valid. Atomic publication, the
+passed signature and schema validation may be reused only while its authenticated
+key remains trusted and its generation time is valid. Both fresh responses and
+304 cache revalidation enforce a maximum feed age of three hours and tolerate
+at most five minutes of future clock skew. Expired data may remain visible as
+stale cache; it must not be reported as a fresh successful check. A future-dated
+feed must not advance the rollback watermark. These are validation rules for
+the existing v1 fields, not a schema change; build publication age is not limited.
+
+The health monitor checks source `lastSuccessAt` as well as feed generation.
+Any failed or over-age source makes health degraded and emits a warning. If no
+source has succeeded within the configured maximum age (three hours by default),
+the monitor fails even when the generator keeps publishing cached builds.
+Atomic publication, the
 15-minute signature/schema/freshness monitor, and a production smoke test using
 the extension's validator are complete. Connecting the local production
 stale/error monitor to an external notification channel remains an operations

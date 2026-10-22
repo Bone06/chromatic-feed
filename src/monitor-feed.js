@@ -17,6 +17,7 @@ const feed = await verifyFeedFiles({
 const health = getFeedHealth({ feed, maxAgeSeconds })
 
 console.log(
-  `Healthy signed feed: ${feed.builds.length} builds, ` +
+  `${health.status === 'healthy' ? 'Healthy' : 'Degraded'} signed feed: ${feed.builds.length} builds, ` +
   `generated ${health.generatedAt}, age ${health.ageSeconds} seconds.`
 )
+for (const warning of health.warnings) console.warn(warning)

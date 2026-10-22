@@ -144,16 +144,20 @@ export const fetchHibbikiRelease = async options =>
 
 export const parseHibbikiReleases = (input, checkedAt) => {
   if (!Array.isArray(input)) throw new Error('GitHub releases must be an array')
-  const builds = input
+  const candidates = input
     .filter(release => TAG_PATTERN.test(release?.tag_name) && !release.draft && !release.prerelease)
-    .map(release => parseHibbikiRelease(release, checkedAt))
-  if (!builds.length) throw new Error('No matching published Hibbiki release found')
-  return builds.reduce((latest, candidate) => {
-    const difference = compareVersions(candidate.build.version, latest.build.version)
+  if (!candidates.length) throw new Error('No matching published Hibbiki release found')
+  const latest = candidates.reduce((latest, candidate) => {
+    const difference = compareVersions(
+      TAG_PATTERN.exec(candidate.tag_name)[1],
+      TAG_PATTERN.exec(latest.tag_name)[1]
+    )
     if (difference > 0) return candidate
     if (difference < 0) return latest
-    return Date.parse(candidate.build.publishedAt) > Date.parse(latest.build.publishedAt)
+    return Date.parse(parseTimestamp(candidate.published_at, 'published_at')) >
+      Date.parse(parseTimestamp(latest.published_at, 'published_at'))
       ? candidate
       : latest
   })
+  return parseHibbikiRelease(latest, checkedAt)
 }

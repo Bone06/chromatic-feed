@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { parseHibbikiRelease } from '../src/adapters/hibbiki-win64.js'
+import { parseHibbikiRelease, parseHibbikiReleases } from '../src/adapters/hibbiki-win64.js'
 import { createFeed, validateFeed } from '../src/feed.js'
 
 const tag = 'v150.0.7871.125-r1639810'
@@ -51,6 +51,18 @@ test('Hibbiki adapter rejects unexpected tags and incomplete releases', () => {
     () => parseHibbikiRelease({ ...release, assets: release.assets.slice(1) }),
     /chrome\.7z/
   )
+})
+
+test('Hibbiki validates assets only for the newest release, without falling back from an incomplete newest one', () => {
+  const old = { ...release, tag_name: 'v149.0.0.0-r1', assets: [] }
+  assert.equal(parseHibbikiReleases([old, release]).build.version, '150.0.7871.125')
+  assert.throws(() => parseHibbikiReleases([release, { ...old, tag_name: 'v151.0.0.0-r1' }]), /outside the allowed release|missing/)
+})
+
+test('feed root rejects fields outside the frozen schema', () => {
+  const { build, source } = parseHibbikiRelease(release)
+  const feed = createFeed({ builds: [build], sources: [source], generatedAt: new Date() })
+  assert.throws(() => validateFeed({ ...feed, unexpected: true }), /feed.unexpected is not allowed/)
 })
 
 test('Hibbiki adapter rejects unsafe repository and download URLs', () => {

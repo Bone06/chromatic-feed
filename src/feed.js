@@ -53,6 +53,7 @@ export const validateFeed = feed => {
   if (!isObject(feed) || feed.schemaVersion !== 1) {
     throw new Error('Feed must use schemaVersion 1')
   }
+  requireExactKeys(feed, ['schemaVersion', 'generatedAt', 'sources', 'builds'], [], 'feed')
   requireIsoTimestamp(feed.generatedAt, 'generatedAt')
 
   if (!Array.isArray(feed.sources) || !Array.isArray(feed.builds)) {
@@ -106,13 +107,13 @@ export const validateFeed = feed => {
     for (const key of ['platform', 'architecture', 'tag', 'channel']) {
       requireIdentifier(build[key], `${build.id}.${key}`)
     }
-    if (!VERSION.test(build.version)) {
+    if (typeof build.version !== 'string' || !VERSION.test(build.version)) {
       throw new Error(`${build.id}.version is invalid`)
     }
     if (build.displayName !== undefined) requireLabel(
       build.displayName, `${build.id}.displayName`
     )
-    if (build.revision !== undefined && !REVISION.test(build.revision)) {
+    if (build.revision !== undefined && (typeof build.revision !== 'string' || !REVISION.test(build.revision))) {
       throw new Error(`${build.id}.revision is invalid`)
     }
     requireIsoTimestamp(build.publishedAt, `${build.id}.publishedAt`)

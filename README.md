@@ -59,6 +59,10 @@ The checked-in public keys are for this project's deployment; they do not give
 a clone access to its private signing key. An independent deployment must
 generate its own key pair and key ID, configure its own signer, and embed the
 matching public key in its extension fork. The private key remains secret.
+In a clone, the canonical public-key file already exists: choose new private
+and public output paths and a new key ID with the environment variables below
+before generating a pair. Neither target may already exist. A failed generation
+cleans up only files created by that invocation; existing key files are preserved.
 
 Planned rotation follows a 12-month maximum active signing lifetime and a
 30-day client migration window; it is not required for every extension release.

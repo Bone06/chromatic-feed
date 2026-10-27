@@ -57,6 +57,15 @@ the active path is a symlink, every later activation is one atomic rename.
 
 ## Application updates
 
+For the next coordinated notifier release after 4.1.0, the audited feed update
+must be deployed on Node.js 26 LTS. The official LTS transition is scheduled for
+2026-10-28; verify the actual published LTS status and package-source availability
+before upgrading. Record the exact 26.x patch and the runtime used by both systemd
+services, not only the interactive shell. Run staged tests and verify manual and
+scheduled publication, signatures and health on that runtime. This release gate
+does not change the code's Node.js 24.11.0 minimum or authorize a host update now.
+See the notifier's [release gates](https://github.com/Bone06/chromium-notifier/blob/master/RELEASE_CHECKLIST.md).
+
 Build the deployment archive from a reviewed Git commit, transfer it to the
 host, and verify its SHA-256 digest before extraction. Never include a working
 tree, `.secrets`, `AI_CONTEXT.md` or private key material. The repository
